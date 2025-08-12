@@ -1,0 +1,16 @@
+{
+  "name": "claude-auto-coder-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Claude Auto Coder",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "@octokit/rest": "^21.0.2",
+    "dotenv": "^16.4.5"
+  }
+}

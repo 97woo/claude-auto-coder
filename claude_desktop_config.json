@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "auto-coder": {
+      "command": "node",
+      "args": ["/Users/parkgeonwoo/n8n-24workflow/mcp-server/server.js"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "PROJECT_ROOT": "/Users/parkgeonwoo/n8n-24workflow"
+      }
+    }
+  }
+}

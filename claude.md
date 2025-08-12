@@ -1,6 +1,6 @@
-# Task #test-006
+# Task #test-auto-001
 
-Create a simple hello-world.js file with a function that returns 'Hello World!'
+Create a file called auto-test.js with a function that returns 'Auto Works!'
 
 ## Guidelines
 - Follow the development guidelines

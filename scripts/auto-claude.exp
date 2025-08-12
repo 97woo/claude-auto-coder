@@ -1,0 +1,51 @@
+#!/usr/bin/expect -f
+
+# Claude 자동 승인 expect 스크립트
+set timeout 120
+set task [lindex $argv 0]
+
+puts "🚀 Running Claude with task: $task"
+
+# Claude 실행 (non-interactive 모드로)
+spawn bash -c "echo '$task' | claude"
+
+# 처음 30초는 대기 (Claude가 작업 처리하도록)
+sleep 30
+
+# 이후 권한 요청 패턴 감지 및 자동 응답
+while {1} {
+    expect {
+        -timeout 5
+        -re "permission|Would you like|proceed|Press Enter to|continue\\?" {
+            puts "\n✅ Auto-approving permission request..."
+            sleep 1
+            send "\r"
+            exp_continue
+        }
+        -re "Write|Create|Edit|Delete" {
+            # 파일 작업 권한 요청
+            puts "\n✅ Auto-approving file operation..."
+            sleep 1
+            send "\r"
+            exp_continue
+        }
+        -re "\\?" {
+            # 질문 감지 (권한 요청일 가능성)
+            puts "\n⚠️ Question detected, sending Enter..."
+            sleep 2
+            send "\r"
+            exp_continue
+        }
+        eof {
+            puts "\n✅ Claude completed"
+            break
+        }
+        timeout {
+            # 5초 동안 아무 출력이 없으면 엔터 입력
+            puts "\n⏳ No output for 5 seconds, sending Enter..."
+            send "\r"
+        }
+    }
+}
+
+wait

@@ -5,6 +5,7 @@
 ## 🚀 핵심 기능
 
 - **Claude Code Pro 활용**: API 키 없이 이미 구독 중인 Claude Code 세션 사용
+- **MCP (Model Context Protocol) 지원**: Claude Desktop과 직접 통합으로 파일 생성/수정 자동화
 - **GitHub Actions 트리거**: "뭐 만들어놔" 하면 자동으로 작업 생성
 - **로컬 실행**: 본인 컴퓨터에서 Claude Code가 자동으로 작업 수행
 - **Gemini 자동 리뷰**: PR 생성 시 자동으로 코드 리뷰
@@ -16,16 +17,20 @@
 
 ```bash
 # 1. 저장소 클론
-git clone https://github.com/yourusername/n8n-24workflow.git
-cd n8n-24workflow
+git clone https://github.com/97woo/claude-auto-coder.git
+cd claude-auto-coder
 
 # 2. 의존성 설치
 npm install
+cd mcp-server && npm install && cd ..
 
 # 3. 실행 권한 부여
 chmod +x scripts/*.sh
 
-# 4. 자동 실행 설정 (Mac)
+# 4. MCP 서버 설정 (Claude Desktop용)
+cp claude_desktop_config.json ~/Library/Application\ Support/Claude/config.json
+
+# 5. 자동 실행 설정 (Mac) - 선택사항
 cp com.ai-code-generator.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.ai-code-generator.plist
 ```
