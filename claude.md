@@ -1,6 +1,6 @@
-# Task #test-002
+# Task #test-003
 
-Create a simple hello.js file that prints 'Hello from Claude Auto Coder!'
+Create a simple calculator.js with add, subtract, multiply, divide functions
 
 ## Guidelines
 - Follow the development guidelines
