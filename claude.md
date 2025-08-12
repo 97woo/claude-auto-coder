@@ -1,6 +1,6 @@
-# Task #test-auto-review-001
+# Task #test-final-001
 
-Create a simple utils/validator.js file with functions to validate email and phone number
+Create a utils/helper.js file with a formatDate function that formats dates to YYYY-MM-DD
 
 ## Guidelines
 - Follow the development guidelines
