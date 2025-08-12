@@ -117,6 +117,57 @@ Changes will be reviewed by Gemini." \
         fi
         
         echo "✅ Task #$ID completed!"
+        
+        # Gemini 리뷰 자동 실행
+        echo "🔍 Running Gemini review..."
+        CHANGED_FILES=$(git diff HEAD~1 --name-only | grep -E '\.(js|ts|py|go|java)$' || true)
+        if [ -n "$CHANGED_FILES" ]; then
+            export CHANGED_FILES
+            export GEMINI_API_KEY="${GEMINI_API_KEY:-AIzaSyA8tKjtfEn-FP4mlTBPRY2GBC3szA-dCFc}"
+            node "$SCRIPT_DIR/../src/review.js" || true
+            
+            # 리뷰 결과가 있으면 자동 개선
+            if [ -f "review-results.json" ] && [ -s "review-results.json" ]; then
+                echo "📝 Applying review improvements..."
+                
+                # 리뷰 요약 추출
+                REVIEW_SUMMARY=$(cat review-results.json | python3 -c "
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    if isinstance(data, list) and len(data) > 0:
+        comment = data[0].get('comment', '')
+        # JSON 내부의 JSON 파싱
+        import re
+        matches = re.findall(r'\"comment\": \"([^\"]+)\"', comment)
+        for i, match in enumerate(matches[:3]):
+            print(f'{i+1}. {match[:100]}')
+except: pass
+" 2>/dev/null || echo "")
+                
+                if [ -n "$REVIEW_SUMMARY" ]; then
+                    echo "Improvements to apply:"
+                    echo "$REVIEW_SUMMARY"
+                    
+                    # Claude로 개선 실행
+                    claude --dangerously-skip-permissions "Apply these code improvements to the files: $REVIEW_SUMMARY" || true
+                    
+                    # 개선사항 커밋
+                    if [ -n "$(git status --porcelain)" ]; then
+                        git add -A
+                        git commit -m "refactor: Auto-apply Gemini review improvements"
+                        
+                        # Push 개선사항
+                        if git remote -v | grep -q origin; then
+                            git push
+                        fi
+                        
+                        echo "✅ Improvements applied and pushed!"
+                    fi
+                fi
+            fi
+        fi
+        
         break  # 한 번에 하나의 작업만 처리
     fi
 done

@@ -1,6 +1,6 @@
-# Task #test-complete-001
+# Task #test-calculator-full-001
 
-Create a src/calculator.js file with add, subtract, multiply, divide functions that handle edge cases
+Create a calculator.js file with basic arithmetic operations (add, subtract, multiply, divide) with proper error handling
 
 ## Guidelines
 - Follow the development guidelines
