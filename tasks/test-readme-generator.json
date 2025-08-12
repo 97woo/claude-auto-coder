@@ -1,0 +1,7 @@
+{
+  "id": "test-004",
+  "task": "Create a utils/readme-generator.js that generates README content from package.json",
+  "created_at": "2024-12-13T14:00:00Z",
+  "status": "in_progress",
+  "machine": "local-mac"
+}
