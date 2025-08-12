@@ -1,10 +1,11 @@
-# AI Code Generator - 24/7 Automation
+# Claude Auto Coder - 24/7 AI 코드 생성 자동화
 
-24시간 자동으로 코드를 생성하고 PR을 만드는 AI 기반 자동화 시스템
+Claude Code Pro와 Gemini를 활용한 24시간 무인 코드 생성 시스템
 
 ## 🚀 핵심 기능
 
-- **Claude Code Pro 활용**: API 키 없이 이미 구독 중인 Claude Code 세션 사용
+- **Claude Code Pro 활용**: API 키 없이 이미 구독 중인 Claude Code 세션 사용 (월 $30)
+- **완전 자동화**: 파일 생성 권한 자동 승인으로 무인 실행 가능
 - **GitHub Actions 트리거**: "뭐 만들어놔" 하면 자동으로 작업 생성
 - **로컬 실행**: 본인 컴퓨터에서 Claude Code가 자동으로 작업 수행
 - **Gemini 자동 리뷰**: PR 생성 시 자동으로 코드 리뷰
@@ -16,8 +17,8 @@
 
 ```bash
 # 1. 저장소 클론
-git clone https://github.com/yourusername/n8n-24workflow.git
-cd n8n-24workflow
+git clone https://github.com/97woo/claude-auto-coder.git
+cd claude-auto-coder
 
 # 2. 의존성 설치
 npm install
@@ -70,7 +71,12 @@ GitHub Actions에서:
 # Gemini 리뷰용 (필수)
 GEMINI_API_KEY=your_gemini_api_key
 
-# GitHub Token은 Actions에서 자동 제공
+# GitHub 설정
+GITHUB_OWNER=your_username
+GITHUB_REPO=claude-auto-coder
+
+# 로컬 머신 이름
+MACHINE_NAME=local-mac
 ```
 
 ## 📝 작업 예시
@@ -94,6 +100,7 @@ GEMINI_API_KEY=your_gemini_api_key
 ### Claude Code 로그인 확인
 ```bash
 claude --version  # Claude Code 설치 확인
+claude login     # 로그인 (Pro 구독 필요)
 ```
 
 ### 로그 확인

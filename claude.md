@@ -1,6 +1,6 @@
-# Task #test-003
+# Task #test-005
 
-Create a simple calculator.js with add, subtract, multiply, divide functions
+Create a test.js file with console.log('Auto generated!')
 
 ## Guidelines
 - Follow the development guidelines
