@@ -1,0 +1,7 @@
+{
+  "id": "test-complete-001",
+  "task": "Create a src/calculator.js file with add, subtract, multiply, divide functions that handle edge cases",
+  "created_at": "2024-12-13T18:00:00Z",
+  "status": "in_progress",
+  "machine": "local-mac"
+}
