@@ -1,0 +1,7 @@
+{
+  "id": "test-002",
+  "task": "Create a simple hello.js file that prints 'Hello from Claude Auto Coder!'",
+  "created_at": "2024-12-13T12:00:00Z",
+  "status": "in_progress",
+  "machine": "local-mac"
+}
