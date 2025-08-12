@@ -1,6 +1,6 @@
-# Task #test-003
+# Task #test-006
 
-Create a simple calculator.js with add, subtract, multiply, divide functions
+Create a simple hello-world.js file with a function that returns 'Hello World!'
 
 ## Guidelines
 - Follow the development guidelines

@@ -71,7 +71,14 @@ EOF
         
         # Claude Code 실행 (이미 로그인된 세션 사용)
         echo "🚀 Running Claude Code..."
-        claude "$TASK" || true
+        
+        # 자동 승인 래퍼 사용
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        if [ -f "$SCRIPT_DIR/claude-auto-wrapper.sh" ]; then
+            timeout 60 "$SCRIPT_DIR/claude-auto-wrapper.sh" "$TASK" || true
+        else
+            claude "$TASK" || true
+        fi
         
         # 변경사항 커밋
         if [ -n "$(git status --porcelain)" ]; then
