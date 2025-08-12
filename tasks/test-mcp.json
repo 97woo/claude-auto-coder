@@ -1,0 +1,7 @@
+{
+  "id": "test-mcp-001",
+  "task": "Create a simple mcp-test.js file with a function that returns 'MCP Works!'",
+  "created_at": "2024-12-13T15:00:00Z",
+  "status": "in_progress",
+  "machine": "local-mac"
+}
