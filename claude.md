@@ -1,6 +1,6 @@
-# Task #test-006
+# Task #test-complete-001
 
-Create a simple hello-world.js file with a function that returns 'Hello World!'
+Create a src/calculator.js file with add, subtract, multiply, divide functions that handle edge cases
 
 ## Guidelines
 - Follow the development guidelines
