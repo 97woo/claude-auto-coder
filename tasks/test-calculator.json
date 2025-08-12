@@ -1,0 +1,7 @@
+{
+  "id": "test-003",
+  "task": "Create a simple calculator.js with add, subtract, multiply, divide functions",
+  "created_at": "2024-12-13T13:00:00Z",
+  "status": "in_progress",
+  "machine": "local-mac"
+}
