@@ -1,0 +1,63 @@
+name: Local Code Task Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task description for local execution'
+        required: true
+        type: string
+        default: 'improve code quality and add new features'
+      machine_name:
+        description: 'Name of the machine that will run the task'
+        required: true
+        type: string
+        default: 'local-mac'
+
+jobs:
+  create-task:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Task File
+        run: |
+          mkdir -p tasks
+          cat > tasks/task-${{ github.run_number }}.json << EOF
+          {
+            "id": "${{ github.run_number }}",
+            "task": "${{ inputs.task }}",
+            "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "status": "pending",
+            "machine": "${{ inputs.machine_name }}"
+          }
+          EOF
+          
+      - name: Commit Task
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add tasks/
+          git commit -m "task: Add task #${{ github.run_number }}"
+          git push
+          
+      - name: Create Issue for Tracking
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Task #${{ github.run_number }}: ${{ inputs.task }}`,
+              body: `## Task Details
+              
+              **Task ID**: ${{ github.run_number }}
+              **Description**: ${{ inputs.task }}
+              **Assigned Machine**: ${{ inputs.machine_name }}
+              **Status**: Pending
+              
+              This task will be picked up by the local Claude Code runner.
+              `,
+              labels: ['task', 'pending']
+            })

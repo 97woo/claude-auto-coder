@@ -1,0 +1,56 @@
+name: Gemini Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        
+      - name: Run Gemini Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: node src/review.js
+        
+      - name: Post Review Comments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reviewPath = './review-results.json';
+            
+            if (fs.existsSync(reviewPath)) {
+              const reviews = JSON.parse(fs.readFileSync(reviewPath, 'utf8'));
+              
+              for (const review of reviews) {
+                await github.rest.pulls.createReviewComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  body: review.comment,
+                  path: review.path,
+                  line: review.line || 1
+                });
+              }
+            }

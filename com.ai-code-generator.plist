@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.ai-code-generator</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/parkgeonwoo/n8n-24workflow/scripts/auto-runner.sh</string>
+    </array>
+    
+    <key>StartInterval</key>
+    <integer>1800</integer> <!-- 30분마다 실행 (1800초) -->
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/parkgeonwoo/n8n-24workflow</string>
+    
+    <key>StandardOutPath</key>
+    <string>/Users/parkgeonwoo/n8n-24workflow/logs/launchd-stdout.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/parkgeonwoo/n8n-24workflow/logs/launchd-stderr.log</string>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>
