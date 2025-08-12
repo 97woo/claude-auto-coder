@@ -1,0 +1,7 @@
+{
+  "id": "test-006", 
+  "task": "Create a simple hello-world.js file with a function that returns 'Hello World!'",
+  "created_at": "2024-12-13T14:30:00Z",
+  "status": "in_progress",
+  "machine": "local-mac"
+}
