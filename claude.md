@@ -1,6 +1,6 @@
-# Task #test-calculator-full-001
+# Task #test-auto-review-001
 
-Create a calculator.js file with basic arithmetic operations (add, subtract, multiply, divide) with proper error handling
+Create a simple utils/validator.js file with functions to validate email and phone number
 
 ## Guidelines
 - Follow the development guidelines

@@ -120,11 +120,41 @@ Changes will be reviewed by Gemini." \
         
         # Gemini 리뷰 자동 실행
         echo "🔍 Running Gemini review..."
-        CHANGED_FILES=$(git diff HEAD~1 --name-only | grep -E '\.(js|ts|py|go|java)$' || true)
+        # 최근 커밋에서 변경된 코드 파일 찾기
+        CHANGED_FILES=$(git diff HEAD~1 --name-only 2>/dev/null | grep -E '\.(js|ts|jsx|tsx|py|go|java|cpp|c|rs)$' || true)
+        
+        if [ -z "$CHANGED_FILES" ]; then
+            # HEAD~1이 없으면 전체 파일 확인
+            CHANGED_FILES=$(git ls-files | grep -E '\.(js|ts|jsx|tsx|py|go|java|cpp|c|rs)$' || true)
+        fi
+        
         if [ -n "$CHANGED_FILES" ]; then
+            echo "Files to review: $CHANGED_FILES"
             export CHANGED_FILES
-            export GEMINI_API_KEY="${GEMINI_API_KEY:-AIzaSyA8tKjtfEn-FP4mlTBPRY2GBC3szA-dCFc}"
-            node "$SCRIPT_DIR/../src/review.js" || true
+            # .env 파일에서 GEMINI_API_KEY 로드
+            if [ -f ".env" ]; then
+                export $(grep GEMINI_API_KEY .env | xargs)
+            fi
+            
+            if [ -z "$GEMINI_API_KEY" ]; then
+                echo "⚠️ GEMINI_API_KEY not found in .env file, skipping review..."
+            else
+                export GEMINI_API_KEY
+                
+                # 현재 스크립트 디렉토리 찾기
+                SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+                PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+                
+                # src/review.js가 있는지 확인
+                REVIEW_SCRIPT="$PROJECT_ROOT/src/review.js"
+                if [ -f "$REVIEW_SCRIPT" ]; then
+                    cd "$PROJECT_ROOT"
+                    node src/review.js || echo "⚠️ Review failed but continuing..."
+                    cd - > /dev/null
+                else
+                    echo "⚠️ Review script not found at $REVIEW_SCRIPT"
+                fi
+            fi
             
             # 리뷰 결과가 있으면 자동 개선
             if [ -f "review-results.json" ] && [ -s "review-results.json" ]; then
