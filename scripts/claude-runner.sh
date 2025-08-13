@@ -158,42 +158,80 @@ Changes will be reviewed by Gemini." \
             
             # 리뷰 결과가 있으면 자동 개선
             if [ -f "review-results.json" ] && [ -s "review-results.json" ]; then
-                echo "📝 Applying review improvements..."
+                echo "📝 Processing review results..."
                 
-                # 리뷰 요약 추출
-                REVIEW_SUMMARY=$(cat review-results.json | python3 -c "
+                # 리뷰 내용을 파일로 저장하여 Claude에 전달
+                REVIEW_CONTENT=$(cat review-results.json | python3 -c "
 import json, sys
 try:
     data = json.load(sys.stdin)
     if isinstance(data, list) and len(data) > 0:
-        comment = data[0].get('comment', '')
-        # JSON 내부의 JSON 파싱
-        import re
-        matches = re.findall(r'\"comment\": \"([^\"]+)\"', comment)
-        for i, match in enumerate(matches[:3]):
-            print(f'{i+1}. {match[:100]}')
-except: pass
+        for item in data:
+            comment = item.get('comment', '')
+            path = item.get('path', '')
+            # Extract nested JSON
+            import re
+            if '```json' in comment:
+                json_match = re.search(r'```json\\n(.+?)\\n```', comment, re.DOTALL)
+                if json_match:
+                    nested_data = json.loads(json_match.group(1))
+                    print(f'File: {path}')
+                    for issue in nested_data[:5]:  # Top 5 issues
+                        line = issue.get('line', '')
+                        severity = issue.get('severity', '')
+                        comment_text = issue.get('comment', '')
+                        if severity in ['error', 'warning']:
+                            print(f'  Line {line} [{severity}]: {comment_text[:100]}')
+except Exception as e:
+    pass
 " 2>/dev/null || echo "")
                 
-                if [ -n "$REVIEW_SUMMARY" ]; then
-                    echo "Improvements to apply:"
-                    echo "$REVIEW_SUMMARY"
+                if [ -n "$REVIEW_CONTENT" ]; then
+                    echo "Review feedback to apply:"
+                    echo "$REVIEW_CONTENT"
                     
-                    # Claude로 개선 실행
-                    claude --dangerously-skip-permissions "Apply these code improvements to the files: $REVIEW_SUMMARY" || true
+                    # 리뷰 내용을 임시 파일에 저장
+                    echo "$REVIEW_CONTENT" > review-feedback.txt
                     
-                    # 개선사항 커밋
-                    if [ -n "$(git status --porcelain)" ]; then
-                        git add -A
-                        git commit -m "refactor: Auto-apply Gemini review improvements"
+                    # 변경된 파일 목록 가져오기
+                    FILES_TO_IMPROVE=$(echo "$CHANGED_FILES" | head -1)
+                    
+                    # Claude로 개선 실행 - 구체적인 파일과 리뷰 내용 전달
+                    if [ -n "$FILES_TO_IMPROVE" ]; then
+                        echo "🔧 Applying improvements to $FILES_TO_IMPROVE..."
                         
-                        # Push 개선사항
-                        if git remote -v | grep -q origin; then
-                            git push
+                        # Claude에게 구체적인 개선 지시
+                        IMPROVEMENT_PROMPT="Based on this code review feedback, improve the file $FILES_TO_IMPROVE:
+
+$(cat review-feedback.txt)
+
+Focus on fixing errors and warnings. Keep the same functionality but improve code quality."
+                        
+                        claude --dangerously-skip-permissions "$IMPROVEMENT_PROMPT" || true
+                        
+                        # 개선사항 커밋
+                        if [ -n "$(git status --porcelain)" ]; then
+                            git add -A
+                            git commit -m "refactor: Apply Gemini review improvements
+
+Automatic improvements based on code review:
+$REVIEW_CONTENT"
+                            
+                            # Push 개선사항
+                            if git remote -v | grep -q origin; then
+                                git push
+                            fi
+                            
+                            echo "✅ Improvements applied and committed!"
+                        else
+                            echo "ℹ️ No changes were made"
                         fi
                         
-                        echo "✅ Improvements applied and pushed!"
+                        # 임시 파일 삭제
+                        rm -f review-feedback.txt
                     fi
+                else
+                    echo "ℹ️ No actionable review feedback found"
                 fi
             fi
         fi
