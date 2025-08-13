@@ -161,30 +161,30 @@ Changes will be reviewed by Gemini." \
                 echo "📝 Processing review results..."
                 
                 # 리뷰 내용을 파일로 저장하여 Claude에 전달
-                REVIEW_CONTENT=$(cat review-results.json | python3 -c "
+                REVIEW_CONTENT=$(cat review-results.json | python3 -c '
 import json, sys
 try:
     data = json.load(sys.stdin)
     if isinstance(data, list) and len(data) > 0:
         for item in data:
-            comment = item.get('comment', '')
-            path = item.get('path', '')
+            comment = item.get("comment", "")
+            path = item.get("path", "")
             # Extract nested JSON
             import re
-            if '```json' in comment:
-                json_match = re.search(r'```json\\n(.+?)\\n```', comment, re.DOTALL)
+            if "```json" in comment:
+                json_match = re.search(r"```json\n(.+?)\n```", comment, re.DOTALL)
                 if json_match:
                     nested_data = json.loads(json_match.group(1))
-                    print(f'File: {path}')
+                    print(f"File: {path}")
                     for issue in nested_data[:5]:  # Top 5 issues
-                        line = issue.get('line', '')
-                        severity = issue.get('severity', '')
-                        comment_text = issue.get('comment', '')
-                        if severity in ['error', 'warning']:
-                            print(f'  Line {line} [{severity}]: {comment_text[:100]}')
+                        line = issue.get("line", "")
+                        severity = issue.get("severity", "")
+                        comment_text = issue.get("comment", "")
+                        if severity in ["error", "warning"]:
+                            print(f"  Line {line} [{severity}]: {comment_text[:100]}")
 except Exception as e:
     pass
-" 2>/dev/null || echo "")
+' 2>/dev/null || echo "")
                 
                 if [ -n "$REVIEW_CONTENT" ]; then
                     echo "Review feedback to apply:"
